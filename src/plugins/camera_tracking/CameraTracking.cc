@@ -75,6 +75,13 @@ class gz::gui::plugins::CameraTrackingPrivate
   public: bool OnFollowOffset(const msgs::Vector3d &_msg,
                msgs::Boolean &_res);
 
+  /// \brief Callback for a follow pgain request
+  /// \param[in] _msg Request message to set the camera's follow pgain.
+  /// \param[in] _res Response data
+  /// \return True if the request is received
+  public: bool OnFollowPGain(const msgs::Double &_msg,
+               msgs::Boolean &_res);
+
   /// \brief Callback when a move to animation is complete
   private: void OnMoveToComplete();
 
@@ -139,6 +146,9 @@ class gz::gui::plugins::CameraTrackingPrivate
 
   /// \brief Follow offset service
   public: std::string followOffsetService;
+
+  /// \brief Follow offset pgain service
+  public: std::string followPGainService;
 
   /// \brief Camera pose topic
   public: std::string cameraPoseTopic;
@@ -208,12 +218,19 @@ void CameraTrackingPrivate::Initialize()
   gzmsg << "Camera pose topic advertised on ["
          << this->cameraPoseTopic << "]" << std::endl;
 
-   // follow offset
-   this->followOffsetService = "/gui/follow/offset";
-   this->node.Advertise(this->followOffsetService,
-       &CameraTrackingPrivate::OnFollowOffset, this);
-   gzmsg << "Follow offset service on ["
-          << this->followOffsetService << "]" << std::endl;
+  // follow offset
+  this->followOffsetService = "/gui/follow/offset";
+  this->node.Advertise(this->followOffsetService,
+      &CameraTrackingPrivate::OnFollowOffset, this);
+  gzmsg << "Follow offset service on ["
+         << this->followOffsetService << "]" << std::endl;
+
+  // follow pgain
+  this->followPGainService = "/gui/follow/pgain";
+  this->node.Advertise(this->followPGainService,
+      &CameraTrackingPrivate::OnFollowPGain, this);
+  gzmsg << "Follow P gain service on ["
+         << this->followPGainService << "]" << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -262,6 +279,17 @@ bool CameraTrackingPrivate::OnFollowOffset(const msgs::Vector3d &_msg,
     this->newFollowOffset = true;
     this->followOffset = msgs::Convert(_msg);
   }
+
+  _res.set_data(true);
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool CameraTrackingPrivate::OnFollowPGain(const msgs::Double &_msg,
+  msgs::Boolean &_res)
+{
+  std::lock_guard<std::mutex> lock(this->mutex);
+  this->followPGain = msgs::Convert(_msg);
 
   _res.set_data(true);
   return true;
