@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2023 Rudis Laboratories LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +61,9 @@ class gz::gui::plugins::CameraTrackingPrivate
   /// \return True if the request is received
   public: bool OnFollow(const msgs::StringMsg &_msg,
       msgs::Boolean &_res);
+
+  public: void OnCameraFollow(double _xPosOffset,
+      double _yPosOffset, double _zPosOffset, double _pGain);
 
   /// \brief Callback for a move to pose request.
   /// \param[in] _msg GUICamera request message.
@@ -270,6 +274,22 @@ void CameraTrackingPrivate::OnMoveToPoseComplete()
 }
 
 /////////////////////////////////////////////////
+void CameraTrackingPrivate::OnCameraFollow(double _xPosOffset,
+  double _yPosOffset, double _zPosOffset, double _pGain)
+{ 
+  std::lock_guard<std::mutex> lock(this->mutex);
+  this->followPGain = _pGain;
+  this->followOffset = math::Vector3d(_xPosOffset,
+      _yPosOffset, _zPosOffset);
+  this->newFollowOffset = true;
+
+  gzmsg << "CameraTracking: [ Target: " 
+        << this->followTarget << " , Camera Offset[x y z]: "
+        << this->followOffset << " , Follow P Gain: "
+        << this->followPGain << " ]" << std::endl;
+}
+
+/////////////////////////////////////////////////
 bool CameraTrackingPrivate::OnFollowOffset(const msgs::Vector3d &_msg,
   msgs::Boolean &_res)
 {
@@ -290,6 +310,10 @@ bool CameraTrackingPrivate::OnFollowPGain(const msgs::Double &_msg,
 {
   std::lock_guard<std::mutex> lock(this->mutex);
   this->followPGain = msgs::Convert(_msg);
+  if (!this->followTarget.empty())
+  {
+    this->newFollowOffset = true;
+  }
 
   _res.set_data(true);
   return true;
@@ -501,6 +525,17 @@ void CameraTrackingPrivate::HandleKeyRelease(events::KeyReleaseOnScene *_e)
     }
   }
 }
+
+/////////////////////////////////////////////////
+void CameraTracking::CameraFollowSetting(double _xPosOffset,
+        double _yPosOffset, double _zPosOffset, double _pGain, const QString &_target)
+{
+  std::string _targetStr = _target.toStdString();
+  this->dataPtr->followTarget = _targetStr;
+  this->dataPtr->OnCameraFollow(_xPosOffset,
+        _yPosOffset, _zPosOffset, _pGain);
+}
+
 
 /////////////////////////////////////////////////
 bool CameraTracking::eventFilter(QObject *_obj, QEvent *_event)

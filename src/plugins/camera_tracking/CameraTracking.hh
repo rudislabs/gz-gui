@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2023 Rudis Laboratories LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +22,7 @@
 #include <memory>
 
 #include "gz/gui/Plugin.hh"
+#include <gz/gui/qt.h>
 
 namespace gz
 {
@@ -48,6 +50,7 @@ namespace plugins
   {
     Q_OBJECT
 
+
     /// \brief Constructor
     public: CameraTracking();
 
@@ -60,6 +63,9 @@ namespace plugins
 
     // Documentation inherited
     private: bool eventFilter(QObject *_obj, QEvent *_event) override;
+
+    public slots: void CameraFollowSetting(double _xPosOffset,
+        double _yPosOffset, double _zPosOffset, double _pGain, const QString &_target);
 
     /// \internal
     /// \brief Pointer to private data.
