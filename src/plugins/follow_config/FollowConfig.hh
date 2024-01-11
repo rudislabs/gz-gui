@@ -47,13 +47,9 @@ namespace plugins
     /// \param[in] _x The follow offset distance in x
     /// \param[in] _y The follow offset distance in y
     /// \param[in] _z The follow offset distance in z
-    public slots: void SetFollowOffset(double _x,
-          double _y, double _z);
-
-    /// \brief Set the follow pgain, requested from the GUI.
-    /// \param[in] _p The follow offset distance in x
-    public slots: void SetFollowPGain(double _p);
-
+    /// \param[in] _p The follow pgain
+    public slots: void SetFollow(double _x,
+          double _y, double _z, double _p);
 
     // Documentation inherited
     private: bool eventFilter(QObject *_obj, QEvent *_event) override;

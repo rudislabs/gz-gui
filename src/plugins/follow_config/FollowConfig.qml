@@ -59,7 +59,7 @@ ColumnLayout {
       stepSize: 0.5
       onEditingFinished:{
         xFollowOffset = value
-        FollowConfig.SetFollowOffset(xFollowOffset, yFollowOffset, zFollowOffset)
+        FollowConfig.SetFollow(xFollowOffset, yFollowOffset, zFollowOffset,pGainFollow)
       }
     }
     // Y follow offset distance
@@ -78,7 +78,7 @@ ColumnLayout {
       stepSize: 0.5
       onEditingFinished:{
         yFollowOffset = value
-        FollowConfig.SetFollowOffset(xFollowOffset, yFollowOffset, zFollowOffset)
+        FollowConfig.SetFollow(xFollowOffset, yFollowOffset, zFollowOffset,pGainFollow)
       }
     }
     // Z follow offset distance
@@ -97,7 +97,7 @@ ColumnLayout {
       stepSize: 0.5
       onEditingFinished:{
         zFollowOffset = value
-        FollowConfig.SetFollowOffset(xFollowOffset, yFollowOffset, zFollowOffset)
+        FollowConfig.SetFollow(xFollowOffset, yFollowOffset, zFollowOffset,pGainFollow)
       }
     }
     // P Gain follow
@@ -116,7 +116,7 @@ ColumnLayout {
       stepSize: 0.01
       onEditingFinished:{
         pGainFollow = value
-        FollowConfig.SetFollowPGain(pGainFollow)
+        FollowConfig.SetFollow(xFollowOffset, yFollowOffset, zFollowOffset,pGainFollow)
       }
     }
   }
